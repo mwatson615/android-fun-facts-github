@@ -12,15 +12,21 @@ import android.widget.TextView;
 
 import java.util.Random;
 
+import static com.teamtreehouse.funfacts.R.id.relativeLayout;
+import static com.teamtreehouse.funfacts.R.id.showFactButton;
+
 
 public class FunFactsActivity extends Activity {
 
     private static final String KEY_FACT = "KEY_FACT";
     private static final String KEY_COLOR = "KEY_COLOR";
     private FactBook mFactBook = new FactBook();
+    private Button mShowFactButton;
     private ColorWheel mColorWheel = new ColorWheel();
-    private String mFact;
-    private int mColor;
+    private TextView mFactLabel;
+    private RelativeLayout mRelativeLayout;
+    private String mFact = mFactBook.mFacts[0];
+    private int mColor = Color.parseColor(mColorWheel.mColors[8]);
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -31,26 +37,37 @@ public class FunFactsActivity extends Activity {
     }
 
     @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        mFact = savedInstanceState.getString(KEY_FACT);
+        mFactLabel.setText(mFact);
+        mColor = savedInstanceState.getInt(KEY_COLOR);
+        mRelativeLayout.setBackgroundColor(mColor);
+        mShowFactButton.setTextColor(mColor);
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fun_facts);
 
         // Declare our View variables and assign them the Views from the layout file
-        final TextView factLabel = (TextView) findViewById(R.id.factTextView);
-        final Button showFactButton = (Button) findViewById(R.id.showFactButton);
-        final RelativeLayout relativeLayout = (RelativeLayout) findViewById(R.id.relativeLayout);
+        mFactLabel = (TextView) findViewById(R.id.factTextView);
+        mShowFactButton = (Button) findViewById(showFactButton);
+        mRelativeLayout = (RelativeLayout) findViewById(relativeLayout);
 
         View.OnClickListener listener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mFact = mFactBook.getFact();
-                factLabel.setText(mFact);
+                mFactLabel.setText(mFact);
 
                 mColor = mColorWheel.getColor();
-                relativeLayout.setBackgroundColor(mColor);
-                showFactButton.setTextColor(mColor);
+                mRelativeLayout.setBackgroundColor(mColor);
+                mShowFactButton.setTextColor(mColor);
             }
         };
-        showFactButton.setOnClickListener(listener);
+        mShowFactButton.setOnClickListener(listener);
     }
 }
